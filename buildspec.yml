@@ -2,11 +2,11 @@ version: 0.2
 phases:
   install:
     commands:
-      - curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.12/2020-07-08/bin/linux/amd64/ku bectl
+      - curl -o kubectl curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/darwin/amd64/kubectl
       - chmod +x ./kubectl
       - mv ./kubectl /usr/local/bin/kubectl
       - mkdir ~/.kube
-      - aws eks --region ap-northeast-2 update-kubeconfig --name <YOUR-CLUSTER-NAME>
+      - aws eks --region ap-northeast-2 update-kubeconfig --name eksworkshop-eksctl
       - kubectl get nodes
   pre_build:
     commands:
