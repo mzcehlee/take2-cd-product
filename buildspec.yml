@@ -7,7 +7,8 @@ phases:
       - whoami
       - curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/darwin/amd64/kubectl
       - chmod +x ./kubectl
-      - mv ./kubectl /usr/local/bin/kubectl
+      - mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
+      - kubectl version --short --client
       - mkdir ~/.kube
       - aws eks --region ap-northeast-2 update-kubeconfig --name eksworkshop-eksctl
       - kubectl get po
