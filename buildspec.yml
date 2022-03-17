@@ -20,4 +20,3 @@ phases:
   post_build:
     commands:
       - kubectl apply -f ./bookinfo.yaml
-
