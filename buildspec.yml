@@ -2,45 +2,19 @@ version: 0.2
 phases:
   install:
     commands:
-      - echo Install started on `date`
-      - echo Entering install phase...
-      - uname -a
-      - yum remove java-11-amazon-corretto-headless -y
-      - yum remove java-1.8.0-amazon-corretto -y
-      - yum install java-17-amazon-corretto-headless -y
-      - JAVA_HOME="/usr/lib/jvm/java-17-amazon-corretto.x86_64"
-      - java -version
-      - pwd
-#      - sudo yum update -y
-#      - sudo amazon-linux-extras install docker
-#      - sudo yum install docker
-#      - sudo service docker start
-#      - sudo usermod -a -G docker ec2-user
-#      - docker info
+      - curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.12/2020-07-08/bin/linux/amd64/ku bectl
+      - chmod +x ./kubectl
+      - mv ./kubectl /usr/local/bin/kubectl
+      - mkdir ~/.kube
+      - aws eks --region ap-northeast-2 update-kubeconfig --name <YOUR-CLUSTER-NAME>
+      - kubectl get nodes
   pre_build:
     commands:
-      - echo Logging in to Amazon ECR...
-      - aws --version
-      - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
-      # - REPOSITORY_URI=<ACCOUNT-ID>.dkr.ecr.<REGION>.amazonaws.com/<BASE-REPO-NAME>
-      - REPOSITORY_URI=961770019511.dkr.ecr.ap-northeast-2.amazonaws.com/take2
-      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - IMAGE_TAG=${COMMIT_HASH:=latest}
+      - echo Pre Build started on `date`
   build:
     commands:
       - echo Build started on `date`
-      - chmod +x ./gradlew
-      - ./gradlew bootJar
-      - echo Building the Docker image...
-      - docker build -t $REPOSITORY_URI:latest .
-      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
   post_build:
     commands:
-      - echo Build completed on `date`
-      - echo Pushing the Docker images...
-      - docker push $REPOSITORY_URI:latest
-      - docker push $REPOSITORY_URI:$IMAGE_TAG
-artifacts:
-  files:
-    - 'build/libs/*.jar'
-  discard-paths: yes
+      - kubectl apply -f ./bookinfo.yaml
+
